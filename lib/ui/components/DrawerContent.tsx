@@ -1,0 +1,85 @@
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { router } from 'expo-router';
+import React from 'react';
+import { Drawer, Divider, Icon, Text, DrawerSectionProps } from 'react-native-paper';
+import Locales from '@/lib/locales';
+import { Image, Linking, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../styles';
+
+interface DrawerContentProps extends DrawerSectionProps {
+  navProps: DrawerContentComponentProps
+}
+
+const DrawerContent = (props: DrawerContentProps) => {
+  const { index, routes } = props.navProps.state;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: Colors.light.gold.background }}>
+      {/* Logo Section */}
+      <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+        <Image
+          source={require('@/assets/images/fmb-logo.png')}
+          style={{ width: '90%', height: 100, resizeMode: 'contain' }}
+        />
+      </View>
+
+      {/* Drawer Items */}
+      <View style={{ flex: 1 }}>
+        <Drawer.Section showDivider={false}>
+          <Drawer.Item
+            label={Locales.t('titleHome')}
+            icon={(props) => <Icon source="home" size={props.size} color={Colors.light.gold.primary} />}
+            active={routes[index]?.name === "(drawer)"}
+            onPress={() => router.push('/(guard)/(drawer)')}
+          />
+          <Divider />
+
+          <Drawer.Item
+            label={Locales.t('communication')}
+            icon={(props) => <Icon source="newspaper-variant" size={props.size} color={Colors.light.gold.primary} />}
+            active={routes[index]?.name === "(drawer)/communication"}
+            onPress={() => router.push('/(guard)/(drawer)/communication')}
+          />
+          <Divider />
+
+          <Drawer.Item
+            label={Locales.t('memberTree')}
+            icon={(props) => <Icon source="account-group" size={props.size} color={Colors.light.gold.primary} />}
+            active={routes[index]?.name === "(drawer)/organization"}
+            onPress={() => router.push('/(guard)/(drawer)/organization')}
+          />
+          <Divider />
+
+          <Drawer.Item
+            label={Locales.t('logout')}
+            icon={(props) => <Icon source="logout" size={props.size} color={Colors.light.gold.primary} />}
+            onPress={() => {
+              props.navProps.navigation.closeDrawer();
+              router.push('/(guard)/(drawer)/logout');
+            }}
+          />
+        </Drawer.Section>
+      </View>
+
+      {/* Footer */}
+      <View style={{ alignItems: 'center', padding: 15, borderTopWidth: 1, borderColor: '#E0E0E0' }}>
+        <Text style={{ fontSize: 12, color: 'gray', marginBottom: 5 }}>Designed & Developed By Aziz Gura</Text>
+
+        {/* Contact Section */}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => Linking.openURL('mailto:azizgura@gmail.com')}>
+            <Text style={{ fontSize: 12, color: Colors.light.gold.primary }}>azizgura@gmail.com</Text>
+          </TouchableOpacity>
+
+          <Text style={{ fontSize: 12, color: 'gray', marginHorizontal: 5 }}>|</Text>
+
+          <TouchableOpacity onPress={() => Linking.openURL('tel:+918696673753')}>
+            <Text style={{ fontSize: 12, color: Colors.light.gold.primary }}>+91 8696673753</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default DrawerContent;

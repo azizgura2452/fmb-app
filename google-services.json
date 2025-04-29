@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375529175528",
+    "project_id": "fmb-kuwait",
+    "storage_bucket": "fmb-kuwait.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375529175528:android:1551b4a4c59dbcb92e8c5d",
+        "android_client_info": {
+          "package_name": "com.fmbkuwait.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP92w9CU33Nvz1Lq6QGOW7ZcuFhYiEUCw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
