@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Surface,
@@ -14,14 +14,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { styles } from '@/lib/ui';
 import { login } from '@/services/thaali.api';
 import SnackbarWidget from '@/lib/ui/components/SnackbarWidget';
-import { useDispatch } from 'react-redux';
-import { setAuth } from '@/store/slices/authSlice';
 import {
-  BackHandler,
   Dimensions,
   ImageBackground,
   StyleSheet,
-  View,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -38,7 +34,6 @@ const Login = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
     setIsLoading(true);

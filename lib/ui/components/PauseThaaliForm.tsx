@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Surface, Button, HelperText, TextInput, Text, Snackbar, Portal } from 'react-native-paper';
 import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { enGB, registerTranslation } from 'react-native-paper-dates'
 import { formatDate } from '@/lib/utils';
@@ -34,14 +34,22 @@ const PauseThaaliForm = ({ onCompletion }) => {
     }, [user]);
 
     const onDismiss = React.useCallback(() => {
+        // If either date is not selected, do not close the date picker
+        if (!range.startDate || !range.endDate) {
+            Alert.alert('Date required', 'Please select both start and end dates.');
+            return; // Do not close the modal
+        }
         setOpen(false);
-    }, [setOpen]);
+    }, [setOpen, range]);
 
     const onConfirm = React.useCallback(
         ({ startDate, endDate }) => {
+            if (!startDate || !endDate) {
+                Alert.alert('Date required', 'Please select both start and end dates.');
+                return;
+            }
             setOpen(false);
 
-            // Adjust dates to ensure correct timezone handling by setting time to noon
             const adjustedStartDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 12);
             const adjustedEndDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 12);
 

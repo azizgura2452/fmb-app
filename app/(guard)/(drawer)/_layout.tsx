@@ -44,56 +44,36 @@ const DrawerLayout = () => {
     const checkFirstLaunch = async () => {
       try {
         const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch')
-        // AsyncStorage.clear()
+        // AsyncStorage.removeItem('isFirstLaunch')
         if (isFirstLaunch === null) {
           setVisible(true)
+          // console.log('First launch detected')
           const titleObj = (
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="flower-tulip-outline" size={30} color={theme.colors.primary} />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transform: [{ translateY: 30 }],
+              }}
+            >
+              {/* <Icon name="flower-tulip-outline" size={30} color={theme.colors.primary} /> */}
               <Text
                 style={{
                   color: theme.colors.primary,
-                  marginLeft: 4,
-                  marginTop: -5,
-                  fontSize: 20,
+                  fontSize: 40,
                 }}
               >
-                Ahlan Wasahlan
+                أهلاً وسهلاً
               </Text>
             </View>
           )
-
           setModalTitle(titleObj)
-          setModalContent(
-            `Ahlan Wasahlan to Faiz Ul Mawaid il Burhaniyah, Hakimi Mohalla, Hawally🌷`,
-          )
+          setModalContent('')
           await AsyncStorage.setItem('isFirstLaunch', 'false')
         } else {
           if (user?.txtAmountDue > 0 && notificationCounter === 0) {
-            const titleObj = (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon
-                  name="alert-circle-outline"
-                  size={30}
-                  color={theme.colors.error}
-                />
-                <Text
-                  style={{
-                    color: theme.colors.error,
-                    marginLeft: 4,
-                    marginTop: -5,
-                    fontSize: 20,
-                  }}
-                >
-                  Payment Reminder
-                </Text>
-              </View>
-            )
-
-            setModalTitle(titleObj)
-            setModalContent(
-              `You have dues of KWD${user?.txtAmountDue}. Kindly clear your dues.`,
-            )
+            // console.log('Second launch detected')
             checkAndShowDueReminder(user?.txtAmountDue)
             dispatch(setNotificationCounter(notificationCounter + 1))
           }
@@ -106,29 +86,93 @@ const DrawerLayout = () => {
     checkFirstLaunch()
   }, [user, notificationCounter])
 
-  // useEffect(() => {
-  //   if (user?.txtAmountDue > 0 && notificationCounter === 0) {
-  //     checkAndShowDueReminder(user?.txtAmountDue)
-  //     dispatch(setNotificationCounter(notificationCounter + 1))
-  //   }
-  // }, [user, notificationCounter]) // Depend on user and counter
+  useEffect(() => {
+    const checkFirstLaunch = async () => {
+      try {
+        const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch')
+        if (isFirstLaunch === null) {
+          // First launch detected
+          setVisible(true)
+          const titleObj = (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transform: [{ translateY: 30 }],
+              }}
+            >
+              <Text
+                style={{
+                  color: theme.colors.primary,
+                  fontSize: 40,
+                }}
+              >
+                أهلاً وسهلاً
+              </Text>
+            </View>
+          )
+          setModalTitle(titleObj)
+          setModalContent('')
+          await AsyncStorage.setItem('isFirstLaunch', 'false')
+        } else {
+          if (user?.txtAmountDue > 0 && notificationCounter === 0) {
+            checkAndShowDueReminder(user.txtAmountDue)
+            dispatch(setNotificationCounter(notificationCounter + 1))
+          }
+        }
+      } catch (error) {
+        console.error('Error checking app launch status:', error)
+      }
+    }
+
+    checkFirstLaunch()
+  }, [user, notificationCounter, theme, dispatch])
 
   const checkAndShowDueReminder = async (amountDue: number) => {
     if (amountDue <= 0) return
 
-    const lastReminder = await SecureStore.getItemAsync('last_due_reminder')
-    const now = new Date()
+    try {
+      const lastReminder = await SecureStore.getItemAsync('last_due_reminder')
+      const now = new Date()
 
-    if (lastReminder) {
-      const lastDate = new Date(lastReminder)
-      const daysDiff = Math.floor(
-        (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24),
+      if (lastReminder) {
+        const lastDate = new Date(lastReminder)
+        const daysDiff = Math.floor(
+          (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24),
+        )
+        if (daysDiff < 30) return
+      }
+
+      setVisible(true)
+      const titleObj = (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Icon
+            name="alert-circle-outline"
+            size={30}
+            color={theme.colors.error}
+          />
+          <Text
+            style={{
+              color: theme.colors.error,
+              marginLeft: 4,
+              marginTop: -5,
+              fontSize: 20,
+            }}
+          >
+            Payment Reminder
+          </Text>
+        </View>
       )
 
-      if (daysDiff < 30) return
+      setModalTitle(titleObj)
+      setModalContent(
+        `You have an outstanding balance of KWD${amountDue}. Kindly clear your dues.`,
+      )
+      await SecureStore.setItemAsync('last_due_reminder', now.toISOString())
+    } catch (error) {
+      console.error('Error handling due reminder:', error)
     }
-    setVisible(true)
-    await SecureStore.setItemAsync('last_due_reminder', now.toISOString())
   }
 
   return (
@@ -140,9 +184,25 @@ const DrawerLayout = () => {
             title={modalTitle}
             content={modalContent}
             onDismiss={hideModal}
+            containerStyle={{
+              justifyContent: 'center',
+              textAlign: 'center',
+              alignItems: 'center',
+              textAlignVertical: 'center',
+              width: 'max-content',
+              paddingVertical: 0, //hi
+              paddingHorizontal: 30,
+            }}
+            dismissableProp={false}
           />
         }
         onDismiss={hideModal}
+        dismissableProp={false}
+        containerStyle={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlignVertical: 'center',
+        }}
       />
       <Drawer
         drawerContent={(props) => (
