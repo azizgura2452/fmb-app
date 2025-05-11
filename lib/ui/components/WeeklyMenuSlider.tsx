@@ -21,7 +21,7 @@ const WeeklyMenuSlider = () => {
         const res = (await getWeeklyMenu()).data;
         setMenu(res.data.menu);
         setLastTime(res.data.last_time);
-        console.log(res.data)
+        // console.log(res.data)
       }
       catch (e) {
         console.log('Error fetching', e)

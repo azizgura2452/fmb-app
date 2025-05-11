@@ -26,6 +26,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const {
@@ -46,10 +47,11 @@ const Login = () => {
       if (response.data?.status === 'success') {
         setSnackbarOpen(true);
         setSnackbarMessage(response.data?.message);
-        dispatch(setAuth(response.data.data));
+        // dispatch(setAuth(response.data.data));
         setIsLoading(false);
-        console.log(response.data?.data)
+        // console.log(response.data?.data)
         if (response.data.data?.id) {
+          await AsyncStorage.setItem('user', JSON.stringify(response.data.data))
           router.push('/(guard)');
         }
       } else {

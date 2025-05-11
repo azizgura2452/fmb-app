@@ -1,4 +1,4 @@
-import { logout, setAuth } from '@/store/slices/authSlice';
+import { logout, performLogout, setAuth } from '@/store/slices/authSlice';
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -12,8 +12,8 @@ const Logout = () => {
         signout();
     }, []);
 
-    const signout = () => {
-        dispatch(logout());
+    const signout = async () => {
+        await dispatch(performLogout());
         router.push('/(auth)/login');
     }
 

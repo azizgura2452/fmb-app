@@ -42,7 +42,7 @@ const ZabihatForm = ({onCompletion}) => {
     
 
     const onSubmit = async (data) => {
-        console.log(data);
+        // console.log(data);
 
         try{
             const res = await submitContribution(data);

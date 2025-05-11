@@ -1,19 +1,53 @@
-// redux/authSlice.ts
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IUser } from '@/lib/interfaces';
-import { activateThaali } from '@/services/thaali.api';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState {
   isAuthenticated: boolean;
   user: IUser | null;
+  loading: boolean;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  loading: true, // app assumes it needs to check session on load
 };
 
-const authSlice = createSlice({
+export const loadUserSession = createAsyncThunk(
+  'auth/loadUserSession',
+  async (_, { dispatch }) => {
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      if (userData) {
+        const user: IUser = JSON.parse(userData);
+        dispatch(setAuth(user));
+      } else {
+        console.log('No user session found.');
+      }
+    } catch (error) {
+      console.error('Failed to load user session', error);
+    } finally {
+      dispatch(setLoading(false)); // done checking session
+    }
+  }
+);
+
+// Logout and clear AsyncStorage
+export const performLogout = createAsyncThunk(
+  'auth/performLogout',
+  async (_, { dispatch }) => {
+    try {
+      await AsyncStorage.removeItem('user');
+      dispatch(logout());
+      console.log('User logged out and session cleared.');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  }
+);
+
+export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
@@ -28,8 +62,11 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<IUser>) {
       state.user = action.payload;
     },
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
+    },
   },
 });
 
-export const { setAuth, logout, setUser } = authSlice.actions;
+export const { setAuth, logout, setUser, setLoading } = authSlice.actions;
 export default authSlice.reducer;

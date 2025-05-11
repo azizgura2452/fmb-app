@@ -42,7 +42,7 @@ const SalawaatForm = ({onCompletion}) => {
     
 
     const onSubmit = async (data) => {
-        console.log(data);
+        // console.log(data);
         const res = await submitContribution(data);
 
         if (res.data) {

@@ -2,32 +2,34 @@ import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { router } from 'expo-router';
-import { Text } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import Login from '../(auth)/login';
 import { getThaaliData } from '@/services/thaali.api';
-import { setUser } from '@/store/slices/authSlice';
+import { setUser, loadUserSession } from '@/store/slices/authSlice';
+import { RootState, AppDispatch } from '@/store/store';
 
 const AuthGuard = () => {
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const { refetch } = useSelector((state) => state.common);
-  const [isMounted, setIsMounted] = useState(false); // Track whether the component is mounted
-  const [isKitchen, setIsKitchen] = useState(false); // Initialize as false
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
+  const { user, isAuthenticated, loading } = useSelector((state: RootState) => state.auth);
+  const { refetch } = useSelector((state: RootState) => state.common);
+  const [isKitchen, setIsKitchen] = useState(false);
 
+  // Load session on mount
   useEffect(() => {
-    setIsMounted(true); // Set mounted to true when the component mounts
-    console.log('Starting up the app!');
-  }, []);
+    dispatch(loadUserSession());
+  }, [dispatch]);
 
+  // Refresh thaali data if refetch triggered
   useEffect(() => {
-    fetchAndUpdateStore();
-  }, [refetch]);
+    if (isAuthenticated) {
+      fetchAndUpdateStore();
+    }
+  }, [refetch, isAuthenticated]);
 
   const fetchAndUpdateStore = async () => {
     try {
       const response = await getThaaliData(user?.id);
       if (response.data?.status === 'success') {
-        // console.log('Updating store..', response.data.data);
         dispatch(setUser(response.data.data));
       }
     } catch (e) {
@@ -35,46 +37,45 @@ const AuthGuard = () => {
     }
   };
 
+  // Check kitchen access
   useEffect(() => {
     if (user?.txtEjamaat_ID === "22222222" && user?.txtSabeelNo === "22222222") {
-      setIsKitchen(true); // Set isKitchen to true if conditions are met
+      setIsKitchen(true);
     }
-  }, [user]); // Run this effect only when user changes
+  }, [user]);
 
+  // Route navigation
   useEffect(() => {
-    if (isMounted && isAuthenticated) {
-      // Navigate based on isKitchen
+    if (!loading && isAuthenticated) {
       if (isKitchen) {
-        router.replace('/(guard)/(kitchendrawer)'); // Use replace to avoid adding to history
+        router.replace('/(guard)/(kitchendrawer)');
       } else {
-        router.replace('/(guard)/(drawer)'); // Use replace to avoid adding to history
+        router.replace('/(guard)/(drawer)');
       }
     }
-  }, [isMounted, isAuthenticated, isKitchen]); // Add isKitchen to dependency array
+  }, [loading, isAuthenticated, isKitchen]);
 
-  const stackNav = () => {
-    return (
-      <Stack
-        screenOptions={{
-          animation: "default",
-          headerShown: false,
-        }}
-      >
-        {isKitchen ? (
-          <Stack.Screen
-            name="(kitchendrawer)"
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <Stack.Screen
-            name="(drawer)"
-            options={{ headerShown: false }}
-          />
-        )}
-      </Stack>
-    );
-  };
+  const stackNav = () => (
+    <Stack
+      screenOptions={{
+        animation: "default",
+        headerShown: false,
+      }}
+    >
+      {isKitchen ? (
+        <Stack.Screen name="(kitchendrawer)" options={{ headerShown: false }} />
+      ) : (
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+      )}
+    </Stack>
+  );
 
+  // Render loader while loading AsyncStorage session check
+  if (loading) {
+    return <ActivityIndicator animating={true} size="large" style={{ flex: 1, justifyContent: 'center' }} />;
+  }
+
+  // Render based on authentication status
   return isAuthenticated ? stackNav() : <Login />;
 };
 

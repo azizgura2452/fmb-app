@@ -47,7 +47,7 @@ const FeedbackForm = ({ menuId, ratings, onResetRatings }) => {
         try {
             const res = await submitFeedback(updatedData);
             if (res?.data) {
-                console.log(res?.data)
+                // console.log(res?.data)
                 setSnackbarMessage(res?.data?.message);
                 setSnackbarOpen(true);
                 reset({ comments: '', food_feedback: '' });
