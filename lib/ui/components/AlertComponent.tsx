@@ -1,10 +1,16 @@
-import React from 'react';
-import { styles } from '../styles';
-import { Surface, Text, Button, IconButton, useTheme } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
+import React from 'react'
+import { styles } from '../styles'
+import { Surface, Text, Button, IconButton, useTheme } from 'react-native-paper'
+import { StyleSheet } from 'react-native'
 
-const AlertComponent = ({ title, content, onDismiss, containerStyle, dismissableProp }) => {
-  const theme = useTheme();
+const AlertComponent = ({
+  title,
+  content,
+  onDismiss,
+  containerStyle,
+  dismissableProp,
+}) => {
+  const theme = useTheme()
   return (
     <Surface style={[styles.cardContainer, containerStyle]}>
       <IconButton
@@ -14,15 +20,17 @@ const AlertComponent = ({ title, content, onDismiss, containerStyle, dismissable
         style={styles2.closeButton}
         iconColor={theme.colors.primary}
       />
-      
+
       <Text variant="headlineLarge" style={{ marginVertical: 10 }}>
         {title}
       </Text>
-      
-      <Text variant="bodyLarge" style={{ marginBottom: 20 }}>
-        {content}
-      </Text>
-      
+
+      {content ? (
+        <Text variant="bodyLarge" style={{ marginBottom: 20 }}>
+          {content}
+        </Text>
+      ) : null}
+
       {/* Button to close if dismissableProp is true */}
       {dismissableProp && (
         <Button mode="outlined" onPress={onDismiss}>
@@ -30,8 +38,8 @@ const AlertComponent = ({ title, content, onDismiss, containerStyle, dismissable
         </Button>
       )}
     </Surface>
-  );
-};
+  )
+}
 
 const styles2 = StyleSheet.create({
   closeButton: {
@@ -40,6 +48,6 @@ const styles2 = StyleSheet.create({
     right: -8,
     zIndex: 1,
   },
-});
+})
 
-export default AlertComponent;
+export default AlertComponent

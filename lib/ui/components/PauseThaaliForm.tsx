@@ -34,11 +34,6 @@ const PauseThaaliForm = ({ onCompletion }) => {
     }, [user]);
 
     const onDismiss = React.useCallback(() => {
-        // If either date is not selected, do not close the date picker
-        if (!range.startDate || !range.endDate) {
-            Alert.alert('Date required', 'Please select both start and end dates.');
-            return; // Do not close the modal
-        }
         setOpen(false);
     }, [setOpen, range]);
 

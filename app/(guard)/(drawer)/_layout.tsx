@@ -21,7 +21,11 @@ const DrawerLayout = () => {
   const [modalContent, setModalContent] = useState('')
   const [modalTitle, setModalTitle] = useState(null)
   const dispatch = useDispatch()
-  const hideModal = () => setVisible(false)
+  const hideModal = () => {
+    setVisible(false)
+    setModalTitle(null)
+    setModalContent('')
+  }
   const { notificationCounter } = useSelector((state) => state.common)
 
   useEffect(() => {
