@@ -20,71 +20,9 @@ const DrawerLayout = () => {
   const { user } = useSelector((state) => state.auth)
   const [modalContent, setModalContent] = useState('')
   const [modalTitle, setModalTitle] = useState(null)
-  // const [menuVisible, setMenuVisible] = React.useState(false);
-
-  // const openMenu = () => setMenuVisible(true);
-  // const closeMenu = () => setMenuVisible(false);
-
   const dispatch = useDispatch()
-
-  // const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false)
-
-  // const [isTodayPaused, setIsTodayPaused] = React.useState<boolean>(false);
   const { notificationCounter } = useSelector((state) => state.common)
-  // useEffect(() => {
-  //   if (user?.id) {
-  //     if (isDateInPausedRange(user)) {
-  //       setIsTodayPaused(true);
-  //     }
-  //   }
-  // }, [user])
-
-  useEffect(() => {
-    const checkFirstLaunch = async () => {
-      try {
-        const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch')
-        // AsyncStorage.removeItem('isFirstLaunch')
-        if (isFirstLaunch === null) {
-          setVisible(true)
-          // console.log('First launch detected')
-          const titleObj = (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transform: [{ translateY: 30 }],
-              }}
-            >
-              {/* <Icon name="flower-tulip-outline" size={30} color={theme.colors.primary} /> */}
-              <Text
-                style={{
-                  color: theme.colors.primary,
-                  fontSize: 40,
-                }}
-              >
-                أهلاً وسهلاً
-              </Text>
-            </View>
-          )
-          setModalTitle(titleObj)
-          setModalContent('')
-          await AsyncStorage.setItem('isFirstLaunch', 'false')
-        } else {
-          if (user?.txtAmountDue > 0 && notificationCounter === 0) {
-            // console.log('Second launch detected')
-            checkAndShowDueReminder(user?.txtAmountDue)
-            dispatch(setNotificationCounter(notificationCounter + 1))
-          }
-        }
-      } catch (error) {
-        console.error('Error checking app launch status:', error)
-      }
-    }
-
-    checkFirstLaunch()
-  }, [user, notificationCounter])
 
   useEffect(() => {
     const checkFirstLaunch = async () => {
@@ -92,31 +30,33 @@ const DrawerLayout = () => {
         const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch')
         if (isFirstLaunch === null) {
           // First launch detected
-          setVisible(true)
-          const titleObj = (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transform: [{ translateY: 30 }],
-              }}
-            >
-              <Text
+          if (!visible) {
+            setVisible(true)
+            const titleObj = (
+              <View
                 style={{
-                  color: theme.colors.primary,
-                  fontSize: 40,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transform: [{ translateY: 30 }],
                 }}
               >
-                أهلاً وسهلاً
-              </Text>
-            </View>
-          )
-          setModalTitle(titleObj)
-          setModalContent('')
+                <Text
+                  style={{
+                    color: theme.colors.primary,
+                    fontSize: 40,
+                  }}
+                >
+                  أهلاً وسهلاً
+                </Text>
+              </View>
+            )
+            setModalTitle(titleObj)
+            setModalContent('')
+          }
           await AsyncStorage.setItem('isFirstLaunch', 'false')
         } else {
-          if (user?.txtAmountDue > 0 && notificationCounter === 0) {
+          if (user?.txtAmountDue > 0 && notificationCounter === 0 && !visible) {
             checkAndShowDueReminder(user.txtAmountDue)
             dispatch(setNotificationCounter(notificationCounter + 1))
           }
@@ -229,37 +169,6 @@ const DrawerLayout = () => {
           options={{
             drawerLabel: Locales.t('titleHome'),
             title: Locales.t('titleHome'),
-            // headerRight: (props) => (
-            //   <Menu
-            //     visible={menuVisible}
-            //     onDismiss={closeMenu}
-            //     anchorPosition="bottom"
-            //     mode="elevated"
-            //     theme={theme}
-            //     contentStyle={{ backgroundColor: '#fff'}}
-            //     style={{marginLeft: -20, paddingVertical: 30}}
-            //     anchor={
-            //       <IconButton
-            //         icon="dots-vertical"
-            //         onPress={openMenu}
-            //       />
-            //     }
-            //   >
-            //     <Menu.Item onPress={() => {
-            //       setMenuVisible(false)
-            //       setVisible(true)
-            //     }} title="Stop Thali Temporarily" leadingIcon={() => (
-            //       <Icon name="clock" size={18} color={theme.colors.outline} />
-            //     )} />
-            //     <Menu.Item onPress={() => {
-            //       startThali()
-            //       setMenuVisible(false)
-            //     }} title="Activate Thali" leadingIcon={() => (
-            //       <Icon name="reload" size={18} color={theme.colors.outline} />
-            //     )} />
-
-            //   </Menu>
-            // )
           }}
         />
         <Drawer.Screen
